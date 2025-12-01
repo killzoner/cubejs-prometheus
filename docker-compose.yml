@@ -1,0 +1,42 @@
+services:
+  cube:
+    # image: cubejs/cube:v1.5.10
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 4000:4000
+      - 3000:3000
+      - 9102:9102
+    env_file: .env
+    volumes:
+      - .:/cube/conf
+    command: ["/usr/local/bin/cubejs", "server"]
+    # depends_on:
+      # - statsdexporter
+
+  postgres:
+    image: postgres:16
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: localDB
+    volumes:
+      - ./scripts:/docker-entrypoint-initdb.d
+
+  # statsdexporter:
+  #   image: prom/statsd-exporter:latest
+  #   ports:
+  #     - "9102:9102"  # StatsD exporter metrics port
+  #     # curl -s "localhost:9102/metrics" | grep -E "^cs_.*"
+  #     # test server: socat -v PIPE udp-recvfrom:5553,fork
+  #     # test client : echo "foo.bar.count:1|c" | nc -u -w0 127.0.0.1 8125
+  #     - "8125:8125/udp"  # Default StatsD listener port (UDP)
+  #   command:
+  #     - '--statsd.listen-udp=:8125'
+  #     - '--statsd.listen-tcp=:8125'
+  #     - '--statsd.mapping-config=/etc/statsd/mapping.yml'
+  #   volumes:
+  #     - ./mapping.yml:/etc/statsd/mapping.yml
