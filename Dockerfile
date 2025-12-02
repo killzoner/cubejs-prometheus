@@ -7,8 +7,8 @@ EXPOSE 9102 9125 9125/udp
 COPY --from=statsdexporter /bin/statsd_exporter /bin/statsd_exporter
 COPY mapping.yml /etc/statsd/mapping.yml
 
-# for debug
-RUN apt update && apt install -y procps 
+# ps for debug
+# RUN apt update && apt install -y procps 
 
 # Add entrypoint file
 RUN mkdir scripts
